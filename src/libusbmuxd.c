@@ -66,7 +66,7 @@
 #include <sys/inotify.h>
 #define EVENT_SIZE  (sizeof (struct inotify_event))
 #define EVENT_BUF_LEN (1024 * (EVENT_SIZE + 16))
-#define USBMUXD_DIRNAME "/var/run"
+#define USBMUXD_DIRNAME "/data/data/com.rockchip.inno.multiprojectionsystem/files/run" //leok
 #define USBMUXD_SOCKET_NAME "usbmuxd"
 #endif /* HAVE_INOTIFY */
 
@@ -85,7 +85,8 @@
 // misc utility functions
 #include "collection.h"
 
-static int libusbmuxd_debug = 0;
+//static int libusbmuxd_debug = 0; //leok
+static int libusbmuxd_debug = 1;
 #define DEBUG(x, y, ...) if (x <= libusbmuxd_debug) fprintf(stderr, (y), __VA_ARGS__); fflush(stderr);
 
 static struct collection devices;
@@ -754,6 +755,7 @@ static void device_monitor_cleanup(void* data)
  */
 static void *device_monitor(void *data)
 {
+	pthread_detach(pthread_self()); //leok
 	collection_init(&devices);
 
 #ifndef WIN32
@@ -824,8 +826,8 @@ USBMUXD_API int usbmuxd_unsubscribe()
 #else
 	res = pthread_kill(devmon, 0);
 	if (res == 0) {
-		pthread_cancel(devmon);
-		res = pthread_join(devmon, NULL);
+		//pthread_cancel(devmon);
+		//res = pthread_join(devmon, NULL);
 	}
 	if ((res != 0) && (res != ESRCH)) {
 		return res;
